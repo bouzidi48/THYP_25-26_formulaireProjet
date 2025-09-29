@@ -1,61 +1,179 @@
-testi 3ndk had l code 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Trombinoscope - Master 2 THYP</title>
+  <meta charset="UTF-8" />
+  <title>Trombinoscope — Master 2 THYP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        crossorigin="anonymous" />
+  <script src="https://d3js.org/d3.v5.min.js"></script>
   <style>
-    body { font-family: Arial; background: #f9f9f9; margin: 20px; }
-    h1 { text-align: center; }
-    .cards { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
-    .card { background: white; border: 1px solid #ccc; border-radius: 8px; width: 300px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .card h2 { font-size: 18px; margin: 0 0 5px; }
-    .card h3 { font-size: 15px; color: #555; margin: 0 0 10px; }
-    .card p { font-size: 14px; margin: 5px 0; }
-    .timestamp { font-size: 12px; color: gray; margin-top: 10px; }
+    /* 🎨 Style global */
+    body {
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    /* 🎓 En-tête */
+    .jumbotron {
+      background: linear-gradient(135deg, gray, #6610f2);
+      color: white;
+      text-align: center;
+      padding: 3rem 2rem;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .jumbotron h1 {
+      font-weight: 700;
+    }
+    .jumbotron h2 {
+      font-weight: 400;
+      opacity: 0.9;
+    }
+
+    /* 🗂️ Carte étudiant */
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      background: white;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .card-body {
+      padding: 1.5rem;
+    }
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: .5rem;
+      text-transform: capitalize;
+    }
+    .card-subtitle {
+      font-size: 0.95rem;
+      font-style: italic;
+      margin-bottom: 1rem;
+    }
+    .card-text {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    /* 🔎 Modal plein écran */
+    .modal-full { min-width: 100%; margin: 0; }
+    .modal-full .modal-content {
+      min-height: 100vh;
+      border-radius: 0;
+      background: #fff;
+    }
+    .modal-header {
+      background: gray;
+      color: white;
+    }
+    .modal-footer {
+      border-top: none;
+    }
+
+    /* 📱 Responsive */
+    @media (max-width: 767px) {
+      .card {
+        margin: 0 auto;
+        max-width: 90%;
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="jumbotron">
+    <h1 class="display-3">Master 2 THYP</h1>
+    <h2>Promotion 2025 - 2026</h2>
+    <hr class="my-4">
+  </div>
+  
+  <div class="container">
+    <div class="row" id="etuCards"></div>
+  </div>
+  
+  <!-- Modal pour détails étudiant -->
+  <div class="modal fade" id="infosEtu" tabindex="-1" role="dialog" aria-labelledby="modalEtuTitle" aria-hidden="true">
+    <div class="modal-dialog modal-full" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEtuTitle">Détails étudiant</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="modalEtuBody"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+  // 👉 Mets ici l’URL CSV de ton Google Sheet publié
+  const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDYFIFR1N75JJAGnAy85HEQpHp_JftRP6_D9waQ4Q7Aisjx1zXxce83V8_AxTxXKvn0hpg_bUYNVo5/pub?gid=870040519&single=true&output=csv'; 
 
-<h1>Trombinoscope - Promotion 2025/2026</h1>
-<div class="cards" id="etuCards"></div>
+  // 👉 Noms des colonnes (doivent correspondre aux entêtes du Sheet)
+  const COL_PRENOM = 'Votre prénom';
+  const COL_NOM = 'Votre nom';
+  const COL_TITRE_PROJET = 'Titre projet';
+  const COL_DESCRIPTION = 'Description';
+  const COL_TECH = 'Technologies utilisés';
 
-<script>
-const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRRLJ9CjeHWp4cZv9RI9SJEGUiA4U55TocqjOvFtKIlIvVviIuuFbHjSDVHXZCB9hXwGmjmO6hhfATg/pub?gid=621225106&single=true&output=csv";
+  d3.csv(urlCSV).then(function(data) {
+    renderCards(data);
+  }).catch(function(err) {
+    console.error("Erreur chargement CSV : ", err);
+  });
 
-// Fonction simple pour parser un CSV
-function parseCSV(str) {
-  const rows = str.trim().split("\n");
-  return rows.map(r => r.split(","));
-}
+  function renderCards(data) {
+    const container = d3.select('#etuCards');
+    container.selectAll('.col-md-4').data(data)
+      .enter()
+      .append('div')
+      .attr('class', 'col-md-4 mb-4')
+      .append('div')
+      .attr('class', 'card')
+      .each(function(d) {
+        const card = d3.select(this);
+        const body = card.append('div').attr('class', 'card-body');
+        body.append('h5').attr('class', 'card-title')
+          .text(d[COL_PRENOM] + ' ' + d[COL_NOM]);
+        body.append('h6').attr('class', 'card-subtitle mb-2 text-muted')
+          .text(d[COL_TITRE_PROJET]);
+        body.append('p').attr('class', 'card-text')
+          .text(d[COL_DESCRIPTION]);
+        body.append('p').attr('class', 'card-text')
+          .html('<strong>Technos :</strong> ' + (d[COL_TECH] || '—'));
+        // clic → modal
+        card.on('click', function() {
+          showModal(d);
+        });
+      });
+  }
 
-fetch(url)
-  .then(res => res.text())
-  .then(csv => {
-    const data = parseCSV(csv);
-    const headers = data[0];
-    const rows = data.slice(1);
+  function showModal(d) {
+    d3.select('#modalEtuTitle').text(d[COL_PRENOM] + ' ' + d[COL_NOM]);
+    let html = '';
+    html += `<p><strong>Titre du projet :</strong> ${d[COL_TITRE_PROJET]}</p>`;
+    html += `<p><strong>Description :</strong><br/>${d[COL_DESCRIPTION]}</p>`;
+    html += `<p><strong>Technologies utilisées :</strong> ${d[COL_TECH]}</p>`;
+    d3.select('#modalEtuBody').html(html);
+    $('#infosEtu').modal('show');
+  }
+  </script>
 
-    const container = document.getElementById("etuCards");
-
-    rows.forEach(r => {
-      const obj = {};
-      headers.forEach((h,i) => obj[h] = r[i] || "");
-
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <h2>${obj["Prénom"]} ${obj["Nom"]}</h2>
-        <h3>${obj["Titre du projet"]}</h3>
-        <p>${obj["Description du Projet"]}</p>
-        <p><strong>Technologies :</strong> ${obj["Technologies utilisées"]}</p>
-        <div class="timestamp">Ajouté le : ${obj["Timestamp"]}</div>
-      `;
-      container.appendChild(card);
-    });
-  })
-  .catch(err => console.error("Erreur CSV:", err));
-</script>
-
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>
