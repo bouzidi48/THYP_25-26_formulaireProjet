@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Trombinoscope — Master 2 THYP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        crossorigin="anonymous" />
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <style>
+    .card-title:first-letter { text-transform: uppercase; }
+    .modal-full { min-width: 100%; margin: 0; }
+    .modal-full .modal-content { min-height: 100vh; }
+  </style>
+</head>
+<body>
+  <div class="jumbotron">
+    <h1 class="display-3">Master 2 THYP</h1>
+    <h2>Promotion 2025 - 2026</h2>
+    <hr class="my-4">
+  </div>
+  
+  <div class="container">
+    <div class="row" id="etuCards"></div>
+  </div>
+  
+  <!-- Modal pour détails étudiant -->
+  <div class="modal fade" id="infosEtu" tabindex="-1" role="dialog" aria-labelledby="modalEtuTitle" aria-hidden="true">
+    <div class="modal-dialog modal-full" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEtuTitle">Détails étudiant</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="modalEtuBody"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+  // 👉 Mets ici l’URL CSV de ton Google Sheet publié
+  const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDYFIFR1N75JJAGnAy85HEQpHp_JftRP6_D9waQ4Q7Aisjx1zXxce83V8_AxTxXKvn0hpg_bUYNVo5/pub?gid=870040519&single=true&output=csv'; 
+
+  // 👉 Noms des colonnes (doivent correspondre aux entêtes du Sheet)
+  const COL_PRENOM = 'Votre prénom';
+  const COL_NOM = 'Votre nom';
+  const COL_TITRE_PROJET = 'Titre projet';
+  const COL_DESCRIPTION = 'Description';
+  const COL_TECH = 'Technologies utilisés';
+
+  d3.csv(urlCSV).then(function(data) {
+    renderCards(data);
+  }).catch(function(err) {
+    console.error("Erreur chargement CSV : ", err);
+  });
+
+  function renderCards(data) {
+    const container = d3.select('#etuCards');
+    container.selectAll('.col-md-4').data(data)
+      .enter()
+      .append('div')
+      .attr('class', 'col-md-4 mb-4')
+      .append('div')
+      .attr('class', 'card')
+      .each(function(d) {
+        const card = d3.select(this);
+        const body = card.append('div').attr('class', 'card-body');
+        body.append('h5').attr('class', 'card-title')
+          .text(d[COL_PRENOM] + ' ' + d[COL_NOM]);
+        body.append('h6').attr('class', 'card-subtitle mb-2 text-muted')
+          .text(d[COL_TITRE_PROJET]);
+        body.append('p').attr('class', 'card-text')
+          .text(d[COL_DESCRIPTION]);
+        body.append('p').attr('class', 'card-text')
+          .html('<strong>Technos :</strong> ' + (d[COL_TECH] || '—'));
+        // clic → modal
+        card.on('click', function() {
+          showModal(d);
+        });
+      });
+  }
+
+  function showModal(d) {
+    d3.select('#modalEtuTitle').text(d[COL_PRENOM] + ' ' + d[COL_NOM]);
+    let html = '';
+    html += `<p><strong>Titre du projet :</strong> ${d[COL_TITRE_PROJET]}</p>`;
+    html += `<p><strong>Description :</strong><br/>${d[COL_DESCRIPTION]}</p>`;
+    html += `<p><strong>Technologies utilisées :</strong> ${d[COL_TECH]}</p>`;
+    d3.select('#modalEtuBody').html(html);
+    $('#infosEtu').modal('show');
+  }
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>
