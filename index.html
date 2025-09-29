@@ -10,81 +10,83 @@
   <script src="https://d3js.org/d3.v5.min.js"></script>
   <style>
     /* 🎨 Style global */
-body {
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  background: #f8f9fa;
-  color: #333;
-}
+    body {
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: #f8f9fa;
+      color: #333;
+    }
 
-/* 🎓 En-tête */
-.jumbotron {
-  background: linear-gradient(135deg, #007bff, #6610f2);
-  color: white;
-  text-align: center;
-  padding: 3rem 2rem;
-  border-radius: 0 0 20px 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-.jumbotron h1 {
-  font-weight: 700;
-}
-.jumbotron h2 {
-  font-weight: 400;
-  opacity: 0.9;
-}
+    /* 🎓 En-tête */
+    .jumbotron {
+      background: linear-gradient(135deg, #007bff, #6610f2);
+      color: white;
+      text-align: center;
+      padding: 3rem 2rem;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .jumbotron h1 {
+      font-weight: 700;
+    }
+    .jumbotron h2 {
+      font-weight: 400;
+      opacity: 0.9;
+    }
 
-/* 🗂️ Carte étudiant */
-.card {
-  border: none;
-  border-radius: 15px;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-  background: white;
-}
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-.card-body {
-  padding: 1.5rem;
-}
-.card-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: .5rem;
-}
-.card-subtitle {
-  font-size: 0.95rem;
-  font-style: italic;
-  margin-bottom: 1rem;
-}
-.card-text {
-  font-size: 0.9rem;
-  color: #555;
-}
+    /* 🗂️ Carte étudiant */
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      background: white;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .card-body {
+      padding: 1.5rem;
+    }
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: .5rem;
+      text-transform: capitalize;
+    }
+    .card-subtitle {
+      font-size: 0.95rem;
+      font-style: italic;
+      margin-bottom: 1rem;
+    }
+    .card-text {
+      font-size: 0.9rem;
+      color: #555;
+    }
 
-/* 🔎 Modal plein écran */
-.modal-full .modal-content {
-  border-radius: 0;
-  background: #fff;
-}
-.modal-header {
-  background: #007bff;
-  color: white;
-}
-.modal-footer {
-  border-top: none;
-}
+    /* 🔎 Modal plein écran */
+    .modal-full { min-width: 100%; margin: 0; }
+    .modal-full .modal-content {
+      min-height: 100vh;
+      border-radius: 0;
+      background: #fff;
+    }
+    .modal-header {
+      background: #007bff;
+      color: white;
+    }
+    .modal-footer {
+      border-top: none;
+    }
 
-/* 📱 Responsive */
-@media (max-width: 767px) {
-  .card {
-    margin: 0 auto;
-    max-width: 90%;
-  }
-}
-
+    /* 📱 Responsive */
+    @media (max-width: 767px) {
+      .card {
+        margin: 0 auto;
+        max-width: 90%;
+      }
+    }
   </style>
 </head>
 <body>
